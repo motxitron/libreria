@@ -1,0 +1,175 @@
+.modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+  }
+  
+  .modal-content {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 500px;
+      animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px
+  ); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .modal-content h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+      font-size: 1.8em;
+  }
+  
+  .form-group {
+      margin-bottom: 20px;
+  }
+ 
+  .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: bold;
+  }
+ 
+  .form-group input[type="text"],
+  .form-group textarea,
+  .form-group input[type="number"] { /* Added textarea and input[type="number"] */
+      width: calc(100% - 20px);
+      padding: 12px 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1em;
+      box-sizing: border-box;
+  }
+ 
+  .form-group input[type="text"]:focus,
+  .form-group textarea:focus, /* Added textarea:focus */
+  .form-group input[type="number"]:focus { /* Added input[type="number"]:focus */
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+ 
+  .error-message {
+      color: #dc3545;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+  }
+ 
+  .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 30px;
+  }
+ 
+  .modal-actions button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s ease,
+  transform 0.1s ease;
+  }
+ 
+  .modal-actions button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+  }
+ 
+  .modal-actions button[type="submit"]:hover:not(
+  :disabled) {
+      background-color: #0056b3;
+      transform: translateY(-1px);
+  }
+ 
+  .modal-actions button[type="submit"]:disabled {
+      background-color: #a0c8ff;
+      cursor: not-allowed;
+  }
+ 
+  .modal-actions button[type="button"] { /* Cancel
+  button */
+      background-color: #6c757d;
+      color: white;
+  }
+ 
+  .modal-actions button[type="button"]:hover:not(
+  :disabled) {
+      background-color: #5a6268;
+      transform: translateY(-1px);
+  }
+ 
+  .modal-actions button[type="button"]:disabled {
+      background-color: #b0b0b0;
+      cursor: not-allowed;
+  }
+ 
+  .edit-book-btn {
+      position: absolute;
+      top: 5px;
+      right: 35px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.8em;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.2s ease;
+  }
+ 
+  .edit-book-btn:hover {
+      background-color: #218838;
+  }
+ 
+  .book-card {
+      position: relative;
+  }
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px; /* Space between stars */
+    font-size: 1.5em; /* Size of the stars */
+    cursor: pointer;
+}
+
+.star {
+    color: #ccc; /* Default star color (unfilled) */
+    transition: color 0.2s ease;
+}
+
+.star.filled {
+    color: #ffc107; /* Filled star color (yellow/gold) */
+}
+
+.selected-rating-value {
+    margin-left: 10px;
+    font-weight: bold;
+    color: #555;
+}
