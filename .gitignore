@@ -42,3 +42,4 @@ libreria-inteligente/backend/static/covers/
 # OS
 .DS_Store
 Thumbs.db
+libreria-inteligente/.env.bak

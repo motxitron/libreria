@@ -15,6 +15,12 @@ from dotenv import load_dotenv
 import json
 from typing import List
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
 import crud, models, database, schemas
 import rag # Import the new RAG module
 import uuid # For generating unique book IDs
@@ -242,6 +248,71 @@ def download_book(book_id: int, db: Session = Depends(get_db)):
             media_type='application/epub+zip',
             content_disposition_type='attachment'
         )
+
+@app.post("/books/{book_id}/send-to-kindle")
+def send_book_to_kindle(book_id: int, db: Session = Depends(get_db)):
+    # 1. Get all configuration from environment variables
+    kindle_email = os.getenv("KINDLE_EMAIL")
+    sender_email = os.getenv("SENDER_EMAIL")
+    sender_password = os.getenv("SENDER_PASSWORD")
+    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_port = os.getenv("SMTP_PORT")
+
+    if not all([kindle_email, sender_email, sender_password, smtp_server, smtp_port]):
+        raise HTTPException(
+            status_code=500, 
+            detail="La configuración para el envío de email está incompleta en el archivo .env"
+        )
+
+    # 2. Get book details from the database
+    book = crud.get_book(db, book_id=book_id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Libro no encontrado.")
+    
+    # 3. Check if the book file exists and is an EPUB
+    if not book.file_path or not os.path.exists(book.file_path):
+        raise HTTPException(status_code=404, detail="El archivo del libro no se encuentra en el servidor.")
+        
+    file_ext = os.path.splitext(book.file_path)[1].lower()
+    if file_ext != ".epub":
+        raise HTTPException(status_code=400, detail="La función 'Enviar a Kindle' solo está disponible para archivos EPUB.")
+
+    # 4. Construct and send the email
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = kindle_email
+        msg['Subject'] = f"Conversión de libro: {book.title}"
+        
+        # Kindle services do not require a body, but it's good practice
+        body = f"Adjunto encontrarás el libro '{book.title}'."
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Attach the file
+        filename = os.path.basename(book.file_path)
+        with open(book.file_path, "rb") as attachment:
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(attachment.read())
+        
+        encoders.encode_base64(part)
+        part.add_header(
+            'Content-Disposition',
+            f"attachment; filename= {filename}",
+        )
+        msg.attach(part)
+
+        # Connect and send
+        server = smtplib.SMTP_SSL(smtp_server, int(smtp_port))
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+        server.quit()
+
+        return {"message": f"El libro '{book.title}' ha sido enviado a tu Kindle. Puede tardar unos minutos en aparecer."}
+    except smtplib.SMTPAuthenticationError:
+        raise HTTPException(status_code=500, detail="Error de autenticación SMTP. Revisa tu SENDER_EMAIL y SENDER_PASSWORD (¿contraseña de aplicación?).")
+    except Exception as e:
+        print(f"Error al enviar a Kindle: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al enviar el libro a Kindle: {str(e)}")
 
 @app.post("/tools/convert-epub-to-pdf", response_model=schemas.ConversionResponse)
 async def convert_epub_to_pdf(file: UploadFile = File(...)):

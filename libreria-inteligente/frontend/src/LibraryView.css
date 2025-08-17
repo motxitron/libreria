@@ -421,3 +421,26 @@
     font-size: 0.85rem;
     color: #a0a0a0;
 }
+
+/* Kindle Button Styles */
+.kindle-button {
+  background-color: #ff9900; /* Amazon's orange color */
+}
+
+.kindle-button:hover:not(:disabled) {
+  background-color: #e68a00;
+}
+
+.kindle-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.kindle-status-message {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #61dafb;
+  text-align: center;
+  padding: 8px 0;
+  margin: 0;
+}

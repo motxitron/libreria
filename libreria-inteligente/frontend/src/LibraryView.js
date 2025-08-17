@@ -46,6 +46,7 @@ function LibraryView() {
   const [showEditModal, setShowEditModal] = useState(false); // New state for modal visibility
   const [bookToEdit, setBookToEdit] = useState(null);
   const [languages, setLanguages] = useState([]);
+  const [kindleStatus, setKindleStatus] = useState({}); // Para el estado de envío a Kindle
 
   useEffect(() => {
     const fetchLanguages = async () => {
@@ -137,6 +138,36 @@ function LibraryView() {
         alert('Error de conexión al intentar eliminar el libro.');
       }
     }
+  };
+
+  const handleSendToKindle = async (bookId, title) => {
+    if (kindleStatus[bookId] === 'Enviando...') return;
+
+    if (!window.confirm(`¿Estás seguro de que quieres enviar "${title}" a tu Kindle?`)) {
+      return;
+    }
+    
+    setKindleStatus(prev => ({ ...prev, [bookId]: 'Enviando...' }));
+
+    try {
+      const response = await fetch(`${API_URL}/books/${bookId}/send-to-kindle`, { method: 'POST' });
+      const result = await response.json();
+      if (response.ok) {
+        setKindleStatus(prev => ({ ...prev, [bookId]: '¡Enviado con éxito!' }));
+      } else {
+        setKindleStatus(prev => ({ ...prev, [bookId]: `Error: ${result.detail}` }));
+      }
+    } catch (err) {
+      setKindleStatus(prev => ({ ...prev, [bookId]: 'Error de conexión.' }));
+    }
+
+    setTimeout(() => {
+      setKindleStatus(prev => {
+        const newStatus = { ...prev };
+        delete newStatus[bookId];
+        return newStatus;
+      });
+    }, 6000);
   };
 
   const handleEditClick = (book) => {
@@ -231,6 +262,13 @@ function LibraryView() {
                 ) : (
                   <>
                     <Link to={`/leer/${book.id}`} className="card-action-button download-button">Leer EPUB</Link>
+                    <button 
+                      onClick={() => handleSendToKindle(book.id, book.title)} 
+                      className="card-action-button kindle-button"
+                      disabled={kindleStatus[book.id] === 'Enviando...'}
+                    >
+                      {kindleStatus[book.id] === 'Enviando...' ? 'Enviando...' : 'Enviar a Kindle'}
+                    </button>
                     {isMobile && ( // Conditionally render download button for mobile
                       <a
                         href={`${API_URL}/books/download/${book.id}`}
@@ -238,6 +276,7 @@ function LibraryView() {
                         download // This attribute suggests download
                       >Descargar EPUB</a>
                     )}
+                    {kindleStatus[book.id] && <p className="kindle-status-message">{kindleStatus[book.id]}</p>}
                   </>
                 )}
             </div>
