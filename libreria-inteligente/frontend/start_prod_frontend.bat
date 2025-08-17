@@ -3,8 +3,7 @@ echo =========================================
 echo   Iniciando Frontend (Produccion)
 echo =========================================
 
-REM Navegar a la carpeta del frontend
-cd "C:\Users\putom\source\repos\biblio-app\libreria-inteligente\frontend"
+
 
 REM Crear la version de produccion del frontend
 echo Creando build de produccion del Frontend...
@@ -17,4 +16,3 @@ python -m http.server 3000
 
 echo.
 echo Frontend iniciado.
-pause

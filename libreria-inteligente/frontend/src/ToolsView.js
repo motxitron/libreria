@@ -100,11 +100,9 @@ function EpubToPdfConverter() {
 function ToolsView() {
   return (
     <div className="tools-container">
-      <h2>Herramientas de la Biblioteca</h2>
-      <div className="tools-grid">
-        <EpubToPdfConverter />
+      <h1>Herramientas de la Biblioteca</h1>
+      <EpubToPdfConverter />
         {/* Aquí se podrían añadir más herramientas en el futuro */}
-      </div>
     </div>
   );
 }
